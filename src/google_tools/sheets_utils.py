@@ -35,3 +35,19 @@ def Create_Service(build_params):
     build_params['credentials'] = creds
     service = build(**build_params)
     return service
+
+
+class GoogleSheetsWB:
+    def __init__(self, wb_dict):
+        self.body = wb_dict
+
+    def add_wb_properties(self, wb_properties):
+        self.body['properties'].update(wb_properties)
+
+    def add_sheets(self, sheets_to_add):
+        sheets_to_add = self.body.get('sheets', []) + [sheets_to_add]
+        self.body['sheets'] = sheets_to_add
+
+    def upload_wb(self, service):
+        sheet_file = service.spreadsheets().create(body=self.body).execute()
+        return sheet_file
