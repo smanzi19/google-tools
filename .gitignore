@@ -1,0 +1,5 @@
+.envrc
+.ipynb_checkpoints
+credentials.json
+token.json
+profile_default
