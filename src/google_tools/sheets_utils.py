@@ -9,20 +9,26 @@ SAMPLE_SPREADSHEET_ID = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
 SAMPLE_RANGE_NAME = 'Class Data!A2:E'
 
 class GoogleSheetsWB:
-    def __init__(self, wb_dict):
+    def __init__(self, service, wb_dict):
         self.wb = wb_dict
+        self.service = service
+
+    def _UpdateSpreadsheet(self):
+        self.wb = self.service.spreadsheets().get(spreadsheetId=self.spreadsheetId).execute()
 
     def AddWbProperties(self, wb_properties):
         self.wb['properties'].update(wb_properties)
 
-    def AddSheets(self, sheets_to_add):
-        sheets_to_add = self.wb.get('sheets', []) + [sheets_to_add]
-        self.wb['sheets'] = sheets_to_add
+    def AddSheets(self, sheet_properties):
+        assert 'title' in sheet_properties['properties'], 'You must name the sheet you want to upload'
+        update_dict = {'requests':[{'addSheet':sheet_properties}]}
+        self.service.spreadsheets().batchUpdate(spreadsheetId=self.spreadsheetId, body=update_dict).execute()
+        self._UpdateSpreadsheet()
 
-    def UploadWb(self, service):
-        sheet_file = service.spreadsheets().create(body=self.wb).execute()
-        self.wb = sheet_file
+    def UploadWb(self):
+        sheet_file = self.service.spreadsheets().create(body=self.wb).execute()
         self.spreadsheetId = sheet_file['spreadsheetId']
+        self._UpdateSpreadsheet()
         return sheet_file
 
     def _process_pandas(self, df, append=False):
@@ -37,7 +43,6 @@ class GoogleSheetsWB:
                    cell_range_key,
                    values,
                    majorDimension,
-                   service,
                    valueInputOption='USER_ENTERED',
                    append=False):
         if isinstance(values, pd.DataFrame):
@@ -49,6 +54,6 @@ class GoogleSheetsWB:
                        'range':sheet_name + cell_range_key,
                        'body':value_body}
         if not append:
-            service.spreadsheets().values().update(**update_dict).execute()
+            self.service.spreadsheets().values().update(**update_dict).execute()
         else:
-            service.spreadsheets().values().append(**update_dict).execute()
+            self.service.spreadsheets().values().append(**update_dict).execute()
