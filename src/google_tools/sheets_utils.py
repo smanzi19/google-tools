@@ -1,5 +1,6 @@
 import os
-from googleapiclient.discovery import build
+import pandas as pd
+
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
@@ -11,27 +12,36 @@ class GoogleSheetsWB:
     def __init__(self, wb_dict):
         self.wb = wb_dict
 
-    def add_wb_properties(self, wb_properties):
+    def AddWbProperties(self, wb_properties):
         self.wb['properties'].update(wb_properties)
 
-    def add_sheets(self, sheets_to_add):
+    def AddSheets(self, sheets_to_add):
         sheets_to_add = self.wb.get('sheets', []) + [sheets_to_add]
         self.wb['sheets'] = sheets_to_add
 
-    def upload_wb(self, service):
+    def UploadWb(self, service):
         sheet_file = service.spreadsheets().create(body=self.wb).execute()
         self.wb = sheet_file
         self.spreadsheetId = sheet_file['spreadsheetId']
         return sheet_file
 
-    def upload_data(self,
-                    sheet_name,
-                    cell_range_key,
-                    values,
-                    majorDimension,
-                    service,
-                    valueInputOption='USER_ENTERED',
-                    append=False):
+    def _process_pandas(self, df, append=False):
+        df = df.copy()
+        vals = df.values.tolist()
+        if not append:
+            vals = [df.columns.tolist()] + vals
+        return vals
+
+    def UploadData(self,
+                   sheet_name,
+                   cell_range_key,
+                   values,
+                   majorDimension,
+                   service,
+                   valueInputOption='USER_ENTERED',
+                   append=False):
+        if isinstance(values, pd.DataFrame):
+            values = self._process_pandas(values, append)
         sheet_name += '!'
         value_body = {'majorDimension':majorDimension, 'values':values}
         update_dict = {'spreadsheetId':self.spreadsheetId,
