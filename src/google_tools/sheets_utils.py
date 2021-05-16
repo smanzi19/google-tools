@@ -10,9 +10,17 @@ SAMPLE_RANGE_NAME = 'Class Data!A2:E'
 
 class GoogleSheetsWB:
 
-    def __init__(self, service, wb_dict):
+    def __init__(self, service, wb_dict, spreadsheetId=None):
         self.wb = wb_dict
         self.service = service
+        self.spreadsheetId = spreadsheetId
+
+    @classmethod
+    def FromExisting(cls, service, google_driver, wb_name):
+        google_driver._UpdateDriver()
+        spreadsheetId = google_driver.gdrive_files[wb_name]
+        wb_dict = service.spreadsheets().get(spreadsheetId=spreadsheetId).execute()
+        return cls(service, wb_dict, spreadsheetId)
 
     def _UpdateSpreadsheet(self):
         self.wb = self.service.spreadsheets().get(spreadsheetId=self.spreadsheetId).execute()

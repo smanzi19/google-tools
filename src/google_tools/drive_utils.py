@@ -13,7 +13,7 @@ class GoogleDriver:
             if page_token is None:
                 break
 
-    def _UpdateDriver():
+    def _UpdateDriver(self):
         self._ExtractAll(d=self.gdrive_folders,
                          q="mimeType='application/vnd.google-apps.folder'")
         self._ExtractAll(d=self.gdrive_files,
