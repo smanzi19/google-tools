@@ -13,6 +13,12 @@ class GoogleDriver:
             if page_token is None:
                 break
 
+    def _UpdateDriver():
+        self._ExtractAll(d=self.gdrive_folders,
+                         q="mimeType='application/vnd.google-apps.folder'")
+        self._ExtractAll(d=self.gdrive_files,
+                         q="mimeType!='application/vnd.google-apps.folder'")
+
     def __init__(self, service):
         self.service = service
         self.gdrive_folders = {}
@@ -38,8 +44,15 @@ class GoogleDriver:
         file_contents = self.service.files().list(q=f"name = '{file_name}'", fields="*").execute()
         return file_contents
 
-    def MoveFileToFolder(self, file_name, folder_name):
-        file_id = self.gdrive_files[file_name]
+    def MakeFolder(self, folder_name):
+        body = {"name":folder_name, "mimeType":"application/vnd.google-apps.folder"}
+        self.service.files().create(body=body).execute()
+        self._ExtractAll(d=self.gdrive_folders,
+                         q="mimeType='application/vnd.google-apps.folder'")
+
+    def MoveToFolder(self, name, folder_name):
+        combined_dict = {**self.gdrive_folders, **self.gdrive_files}
+        file_id = combined_dict[name]
         folder_id = self.gdrive_folders[folder_name]
         file = self.service.files().get(fileId=file_id,
                                         fields='parents').execute()

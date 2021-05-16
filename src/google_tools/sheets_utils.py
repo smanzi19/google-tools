@@ -9,6 +9,7 @@ SAMPLE_SPREADSHEET_ID = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
 SAMPLE_RANGE_NAME = 'Class Data!A2:E'
 
 class GoogleSheetsWB:
+    
     def __init__(self, service, wb_dict):
         self.wb = wb_dict
         self.service = service
