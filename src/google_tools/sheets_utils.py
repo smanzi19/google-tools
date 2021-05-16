@@ -1,12 +1,4 @@
-import os
 import pandas as pd
-
-
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-
-# Sample sheet
-SAMPLE_SPREADSHEET_ID = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
-SAMPLE_RANGE_NAME = 'Class Data!A2:E'
 
 class GoogleSheetsWB:
 
