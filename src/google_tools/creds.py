@@ -4,7 +4,8 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
-          'https://www.googleapis.com/auth/drive']
+          'https://www.googleapis.com/auth/drive',
+          'https://www.googleapis.com/auth/presentations']
 CREDENTIALS_PATH = os.environ['GOOGLE_APPLICATIONS_CREDENTIALS_PATH']
 
 def Create_Creds():
