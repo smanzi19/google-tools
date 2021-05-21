@@ -28,10 +28,10 @@ class GoogleDriver:
         self._ExtractAll(d=self.gdrive_files,
                          q="mimeType!='application/vnd.google-apps.folder'")
 
-    def GetFolders():
+    def GetFolders(self):
         return self.gdrive_folders
 
-    def GetFiles():
+    def GetFiles(self):
         return self.gdrive_files
 
     def SearchFolder(self, folder_name):
